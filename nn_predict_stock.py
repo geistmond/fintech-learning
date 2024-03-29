@@ -43,15 +43,14 @@ x_train, y_train = np.array(x_train), np.array(y_train)
 x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 
 # Build model
-model = Sequential()
+model = Sequential() # Sequential for time series data
 model.add(LSTM(units=50, return_sequences=True, input_shape=(x_train.shape[1], 1))) # Input
-model.add(Dropout(0.2))
+model.add(Dropout(0.2)) # entropy bottleneck 1 to avoid over-fitting
 model.add(LSTM(units=50, return_sequences=True)) # Connect middle layer for input handling
-model.add(Dropout(0.2))
+model.add(Dropout(0.2)) # entropy bottleneck 2
 model.add(LSTM(units=50)) # Connect middle layer to reduce
-model.add(Dropout(0.2))
+model.add(Dropout(0.2)) # entropy bottleneck 3
 model.add(Dense(units=1)) # Prediction output from NN of the next closing price from Dense layer
-
 model.compile(optimizer='adam', loss='mean_squared_error')
 model.fit(x_train, y_train, epochs=10, batch_size=32)
 
