@@ -22,7 +22,14 @@ end = datetime.datetime(2020,1,1)
 
 #data_old = web.DataReader(company, 'yahoo', start, end)
 
+### Comment out after hitting API once for new stock data. ###
 data = web.DataReader(company, "av-daily", start, end, api_key=av_api_key)
+# Put result in CSV file
+data.to_csv(company+'.csv', index=True)
+csv_data = pd.read_csv(company+'.csv')
+
+### comment out if hitting API every time ###
+data = pd.read_csv(company+'.csv') # = pd.read_csv(company+'.csv')
 
 print(data)
 

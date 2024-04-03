@@ -1,4 +1,5 @@
-# Random Forest Classifier
+# Random Forest Classifier to classify trends in stock price.
+# Random Forest Regressor to predict time series information about stock price.
 
 import numpy as np
 import pandas as pd
@@ -22,12 +23,15 @@ av_api_key = av_key
 # Load and prepare training data
 start = datetime.datetime(2010,1,1)
 end = datetime.datetime(2020,1,1)
-data = web.DataReader(company, "av-daily", start, end, api_key=av_api_key)
+#data = web.DataReader(company, "av-daily", start, end, api_key=av_api_key)
 #print(data)
 
 # Put result in CSV file
-data.to_csv(company+'.csv', index=True)
-csv_data = pd.read_csv(company+'.csv')
+#data.to_csv(company+'.csv', index=True)
+#csv_data = pd.read_csv(company+'.csv')
+
+### comment out if hitting API ###
+data = pd.read_csv(company+'.csv') # = pd.read_csv(company+'.csv')
 
 # Add data about next day values
 data['tomorrow'] = data['close'].shift(-1)
@@ -54,7 +58,9 @@ def predict_class(data, test_data, predictors, classifier):
     classifier.fit(data[predictors], data['target'])
     preds = classifier.predict(test_data[predictors])
     preds = pd.Series(preds, index=test_data.index, name='predictions')
-    combined = pd.concat([test_data['target'], preds], axis=0)
+    print("Concat is this and predictions: ", test_data['target'])
+    print("Predictions: ", preds)
+    combined = pd.concat([test_data['target'], preds], axis=1)
     #prec = precision_score(test_data['target'], preds)
     return combined
 
@@ -81,14 +87,16 @@ regressor.fit(total_dataset[regressor_predictors], total_dataset['close'])
 predictions = regressor.predict(total_dataset[regressor_predictors])
 #print(predictions)
 
-original_values = total_dataset['close'] # exclude last value which is NaN
+original_values = data['close'] 
+print(original_values[0])
 predicted_values = pd.Series(predictions, index=total_dataset.index)
 
-print(original_values)
-print(predicted_values)
+#print(original_values)
+#print(predicted_values)
+#print(total_dataset['close'])
 
 # Plot the test predictions
-plt.plot(total_dataset['close'], color="black", label=f"Actual {company} price")
+plt.plot(original_values, color="red", label=f"Actual {company} price")
 plt.plot(predictions, color="green", label=f"Predicted {company} price")
 plt.title(f"{company} Share Price")
 plt.xlabel('Time')
